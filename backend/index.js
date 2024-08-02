@@ -5,6 +5,7 @@ const cors = require('cors');
 
 app.use(bodyParser.json());
 
+app.use(cors());
 app.post("/bfhl", (req, res) => {
   const { data } = req.body;
 
