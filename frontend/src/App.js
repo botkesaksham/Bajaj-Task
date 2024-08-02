@@ -19,14 +19,24 @@ const App = () => {
   };
 
   const handleSubmit = async () => {
+    let inputData;
     try {
-      let inputData;
-      try {
-        inputData = JSON.parse(inputValue);
-      } catch {
-        inputData = { data: inputValue.split(",").map((item) => item.trim()) };
+      inputData = JSON.parse(inputValue);
+      if (
+        !inputData ||
+        typeof inputData !== "object" ||
+        !Array.isArray(inputData.data)
+      ) {
+        throw new Error("Invalid format");
       }
+      setError(null); // Clear any previous error
+    } catch (err) {
+      setError("Invalid input format. Ensure the format is { \"data\": [\"M\", \"1\", \"334\", \"4\", \"B\"] }.");
+      setResponseData(null);
+      return; // Stop further execution if input format is wrong
+    }
 
+    try {
       const response = await axios.post(
         "https://bajaj-task-sakshambotke-ra2111008020027.up.railway.app/bfhl",
         inputData,
@@ -40,7 +50,7 @@ const App = () => {
       setError(null);
     } catch (err) {
       console.error("Error:", err.response ? err.response.data : err.message);
-      setError("Invalid input or server error");
+      setError("Server error occurred.");
       setResponseData(null);
     }
   };
@@ -66,7 +76,7 @@ const App = () => {
           <p>Alphabets: {filteredResponse.alphabets.join(",")}</p>
         )}
         {filteredResponse.highest_alphabet && (
-          <p>Highest Alphabet: {filteredResponse.highest_alphabet.join(",")}</p>
+          <p>Highest Alphabet: {filteredResponse.highest_alphabet}</p>
         )}
       </div>
     );
