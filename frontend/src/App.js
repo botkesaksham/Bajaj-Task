@@ -80,7 +80,7 @@ const App = () => {
         onChange={handleInputChange}
         rows="10"
         cols="50"
-        placeholder='Enter JSON like {"data": ["A","B","C"]} or comma-separated values like A,B,C'
+        placeholder='Enter JSON API INPUT like {"data": ["A","B","C"]}'
         className="w-full max-w-md p-2 border rounded"
       />
       <button
@@ -104,7 +104,6 @@ const App = () => {
           {renderResponse()}
         </>
       )}
-      {/* Blue line at the end */}
       <div className="w-full max-w-md border-t-4 border-blue-500 mt-4"></div>
     </div>
   );
