@@ -29,11 +29,11 @@ const App = () => {
       ) {
         throw new Error("Invalid format");
       }
-      setError(null); // Clear any previous error
+      setError(null);
     } catch (err) {
       setError("Invalid input format. Ensure the format is { \"data\": [\"M\", \"1\", \"334\", \"4\", \"B\"] }.");
       setResponseData(null);
-      return; // Stop further execution if input format is wrong
+      return; 
     }
 
     try {
