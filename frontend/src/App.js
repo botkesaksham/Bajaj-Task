@@ -78,17 +78,17 @@ const App = () => {
       <div className="w-full max-w-lg p-6 mt-6 bg-white shadow-lg rounded-lg border border-gray-200">
         <h3 className="text-2xl font-semibold mb-4 text-center">Filtered Response</h3>
         {filteredResponse.numeric_values && (
-          <p className="text-lg text-blue-600 mb-2">
+          <p className="text-lg text-black">
             <strong>Numbers:</strong> {filteredResponse.numeric_values.join(", ")}
           </p>
         )}
         {filteredResponse.alphabetic_values && (
-          <p className="text-lg text-blue-600 mb-2">
+          <p className="text-lgtext-black mb-2">
             <strong>Alphabets:</strong> {filteredResponse.alphabetic_values.join(", ")}
           </p>
         )}
         {filteredResponse.lowest_lowercase_alphabet && (
-          <p className="text-lg text-blue-600">
+          <p className="text-lg text-black">
             <strong>Lowest Lowercase Alphabet:</strong> {filteredResponse.lowest_lowercase_alphabet.join(", ")}
           </p>
         )}
@@ -100,7 +100,7 @@ const App = () => {
     <div className="bg-gradient-to-br from-purple-400 to-blue-600 min-h-screen flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-xl bg-white rounded-lg shadow-md p-8">
         <h1 className="mb-6 text-3xl font-bold text-center text-gray-800">
-          RA2111008020027 - Bajaj Fiserv Health Task
+          RA2111008020027 - Bajaj Finserv Health Task
         </h1>
         <textarea
           value={inputValue}
