@@ -89,9 +89,9 @@ const App = () => {
         value={inputValue}
         onChange={handleInputChange}
         rows="10"
-        cols="50"
+        cols="30"
         placeholder='Enter JSON API INPUT like {"data": ["A","B","C"]}'
-        className="w-full max-w-md p-2 border rounded"
+        className="w-full max-w-md h-20 p-2 border rounded"
       />
       <button
         onClick={handleSubmit}

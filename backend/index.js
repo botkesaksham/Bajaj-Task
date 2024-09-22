@@ -1,41 +1,81 @@
 const express = require("express");
-const app = express();
 const bodyParser = require("body-parser");
-const cors = require('cors');
+const cors = require("cors");
 
-app.use(bodyParser.json());
+const app = express();
+const port =  3000;
 
-app.use(cors());
+// Middleware setup
+app.use(cors()); // Handle cross-origin requests
+app.use(bodyParser.json({ limit: "10mb" })); // Handle JSON input up to 10MB
+
+// Utility function to process input data
+const separateData = (data) => {
+  let numbers = [],
+    alphabets = [],
+    highestLowercase = null;
+
+  data.forEach((item) => {
+    if (!isNaN(item)) numbers.push(item);
+    else if (/^[a-zA-Z]$/.test(item)) {
+      alphabets.push(item);
+      if (
+        item === item.toLowerCase() &&
+        (!highestLowercase || item > highestLowercase)
+      ) {
+        highestLowercase = item;
+      }
+    }
+  });
+
+  return { numbers, alphabets, highestLowercase };
+};
+
+// POST /bfhl - Handle incoming data and file
 app.post("/bfhl", (req, res) => {
-  const { data } = req.body;
+  const { data, file_b64 } = req.body;
+  if (!data || !Array.isArray(data))
+    return res
+      .status(400)
+      .json({ is_success: false, message: "Invalid input" });
 
-  if (!Array.isArray(data)) {
-    return res.status(400).json({ is_success: false, error: "Invalid data format. Expected an array." });
+  const { numbers, alphabets, highestLowercase } = separateData(data);
+
+  let fileDetails = {
+    file_valid: false,
+    file_mime_type: null,
+    file_size_kb: null,
+  };
+  if (file_b64) {
+    try {
+      const buffer = Buffer.from(file_b64, "base64");
+      fileDetails = {
+        file_valid: true,
+        file_mime_type:
+          buffer[0] === 0x89 && buffer[1] === 0x50
+            ? "image/png"
+            : "application/octet-stream",
+        file_size_kb: (buffer.length / 1024).toFixed(2),
+      };
+    } catch (error) {
+      fileDetails.file_valid = false;
+    }
   }
-
-  const alphabets = data.filter(item => typeof item === 'string' && /^[A-Za-z]$/.test(item));
-  const numbers = data.filter(item => !isNaN(item) && typeof item !== 'boolean' && item !== '');
-
-  const highest_alphabet = alphabets.length > 0
-    ? [alphabets.reduce((a, b) => (a.toLowerCase() > b.toLowerCase() ? a : b))]
-    : [];
 
   res.json({
     is_success: true,
-    user_id: "saksham_botke_09112003",
+    user_id: "SAKSHAM BOTKE",
     email: "sa9607@srmist.edu.in",
     roll_number: "RA2111008020027",
     numbers,
     alphabets,
-    highest_alphabet,
+    highest_lowercase_alphabet: highestLowercase ? [highestLowercase] : [],
+    ...fileDetails,
   });
 });
 
-
 app.get("/bfhl", (req, res) => {
-  res.json({ operation_code: 1 });
+  res.status(200).json({ operation_code: 1 });
 });
 
-app.listen(3000, () => {
-  console.log("Server is listening on port 3000");
-});
+app.listen(port, () => console.log(`Server running on port ${port}`));
