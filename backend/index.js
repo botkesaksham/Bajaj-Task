@@ -3,35 +3,32 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 
 const app = express();
-const port =  3000;
+const port = 3000;
 
-// Middleware setup
-app.use(cors()); // Handle cross-origin requests
-app.use(bodyParser.json({ limit: "10mb" })); // Handle JSON input up to 10MB
+app.use(cors()); 
+app.use(bodyParser.json({ limit: "10mb" })); 
 
-// Utility function to process input data
-const separateData = (data) => {
-  let numbers = [],
-    alphabets = [],
-    highestLowercase = null;
+const processInputData = (data) => {
+  let numericValues = [],
+    alphabeticValues = [],
+    lowestLowercase = null;
 
   data.forEach((item) => {
-    if (!isNaN(item)) numbers.push(item);
+    if (!isNaN(item)) numericValues.push(item);
     else if (/^[a-zA-Z]$/.test(item)) {
-      alphabets.push(item);
+      alphabeticValues.push(item);
       if (
         item === item.toLowerCase() &&
-        (!highestLowercase || item > highestLowercase)
+        (!lowestLowercase || item > lowestLowercase)
       ) {
-        highestLowercase = item;
+        lowestLowercase = item;
       }
     }
   });
 
-  return { numbers, alphabets, highestLowercase };
+  return { numericValues, alphabeticValues, lowestLowercase };
 };
 
-// POST /bfhl - Handle incoming data and file
 app.post("/bfhl", (req, res) => {
   const { data, file_b64 } = req.body;
   if (!data || !Array.isArray(data))
@@ -39,26 +36,27 @@ app.post("/bfhl", (req, res) => {
       .status(400)
       .json({ is_success: false, message: "Invalid input" });
 
-  const { numbers, alphabets, highestLowercase } = separateData(data);
+  const { numericValues, alphabeticValues, lowestLowercase } = processInputData(data);
 
-  let fileDetails = {
-    file_valid: false,
-    file_mime_type: null,
-    file_size_kb: null,
+  let fileInfo = {
+    is_file_valid: false,
+    mime_type: null,
+    size_in_kb: null,
   };
+
   if (file_b64) {
     try {
-      const buffer = Buffer.from(file_b64, "base64");
-      fileDetails = {
-        file_valid: true,
-        file_mime_type:
-          buffer[0] === 0x89 && buffer[1] === 0x50
+      const fileBuffer = Buffer.from(file_b64, "base64");
+      fileInfo = {
+        is_file_valid: true,
+        mime_type:
+          fileBuffer[0] === 0x89 && fileBuffer[1] === 0x50
             ? "image/png"
             : "application/octet-stream",
-        file_size_kb: (buffer.length / 1024).toFixed(2),
+        size_in_kb: (fileBuffer.length / 1024).toFixed(2),
       };
-    } catch (error) {
-      fileDetails.file_valid = false;
+    } catch (err) {
+      fileInfo.is_file_valid = false;
     }
   }
 
@@ -67,10 +65,10 @@ app.post("/bfhl", (req, res) => {
     user_id: "SAKSHAM BOTKE",
     email: "sa9607@srmist.edu.in",
     roll_number: "RA2111008020027",
-    numbers,
-    alphabets,
-    highest_lowercase_alphabet: highestLowercase ? [highestLowercase] : [],
-    ...fileDetails,
+    numeric_values: numericValues,
+    alphabetic_values: alphabeticValues,
+    lowest_lowercase_alphabet: lowestLowercase ? [lowestLowercase] : [],
+    ...fileInfo,
   });
 });
 
