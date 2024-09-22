@@ -8,19 +8,23 @@ const App = () => {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [error, setError] = useState(null);
 
+  // Options for the react-select dropdown
   const options = [
-    { value: "alphabets", label: "Alphabets" },
-    { value: "numbers", label: "Numbers" },
-    { value: "highest_alphabet", label: "Highest Alphabet" },
+    { value: "alphabetic_values", label: "Alphabets" },
+    { value: "numeric_values", label: "Numbers" },
+    { value: "lowest_lowercase_alphabet", label: "Lowest Lowercase Alphabet" },
   ];
 
+  // Handle textarea input change
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
   };
 
+  // Handle form submission and API call
   const handleSubmit = async () => {
     let inputData;
     try {
+      // Validate and parse the JSON input
       inputData = JSON.parse(inputValue);
       if (
         !inputData ||
@@ -31,14 +35,17 @@ const App = () => {
       }
       setError(null);
     } catch (err) {
-      setError("Invalid input format. Ensure the format is { \"data\": [\"M\", \"1\", \"334\", \"4\", \"B\"] }.");
+      setError(
+        'Invalid input format. Ensure the format is { "data": ["M", "1", "334", "4", "B"] }.'
+      );
       setResponseData(null);
-      return; 
+      return;
     }
 
     try {
+      // Make API request to the backend
       const response = await axios.post(
-        "https://bajaj-task-sakshambotke-ra2111008020027.up.railway.app/bfhl",
+        "https://sakshambotke-ra2111008020027.up.railway.app/bfhl", // Update API URL if needed
         inputData,
         {
           headers: {
@@ -55,6 +62,7 @@ const App = () => {
     }
   };
 
+  // Filter the API response based on selected options
   const renderResponse = () => {
     if (!responseData) return null;
 
@@ -67,54 +75,65 @@ const App = () => {
       }, {});
 
     return (
-      <div className="w-full max-w-md p-4 mt-4 bg-gray-100 rounded">
-        <h3 className="font-bold">Filtered Response</h3>
-        {filteredResponse.numbers && (
-          <p>Numbers: {filteredResponse.numbers.join(",")}</p>
+      <div className="w-full max-w-lg p-6 mt-6 bg-white shadow-lg rounded-lg border border-gray-200">
+        <h3 className="text-2xl font-semibold mb-4 text-center">Filtered Response</h3>
+        {filteredResponse.numeric_values && (
+          <p className="text-lg text-blue-600 mb-2">
+            <strong>Numbers:</strong> {filteredResponse.numeric_values.join(", ")}
+          </p>
         )}
-        {filteredResponse.alphabets && (
-          <p>Alphabets: {filteredResponse.alphabets.join(",")}</p>
+        {filteredResponse.alphabetic_values && (
+          <p className="text-lg text-blue-600 mb-2">
+            <strong>Alphabets:</strong> {filteredResponse.alphabetic_values.join(", ")}
+          </p>
         )}
-        {filteredResponse.highest_alphabet && (
-          <p>Highest Alphabet: {filteredResponse.highest_alphabet}</p>
+        {filteredResponse.lowest_lowercase_alphabet && (
+          <p className="text-lg text-blue-600">
+            <strong>Lowest Lowercase Alphabet:</strong> {filteredResponse.lowest_lowercase_alphabet.join(", ")}
+          </p>
         )}
       </div>
     );
   };
 
   return (
-    <div className="bg-gray-50 flex flex-col items-center justify-center min-h-screen p-4">
-      <h1 className="mb-4 text-4xl font-bold">RA2111008020027</h1>
-      <textarea
-        value={inputValue}
-        onChange={handleInputChange}
-        rows="10"
-        cols="30"
-        placeholder='Enter JSON API INPUT like {"data": ["A","B","C"]}'
-        className="w-full max-w-md h-20 p-2 border rounded"
-      />
-      <button
-        onClick={handleSubmit}
-        className="w-full max-w-md px-4 py-2 mt-4 text-white bg-blue-500 hover:bg-blue-700 rounded"
-      >
-        Submit
-      </button>
-      {error && <p className="mt-2 text-red-500">{error}</p>}
-      {responseData && (
-        <>
-          <div className="w-full max-w-md mt-4">
-            <Select
-              options={options}
-              isMulti
-              onChange={(selected) => setSelectedOptions(selected)}
-              className="react-select-container"
-              classNamePrefix="react-select"
-            />
-          </div>
-          {renderResponse()}
-        </>
-      )}
-      <div className="w-full max-w-md border-t-4 border-blue-500 mt-4"></div>
+    <div className="bg-gradient-to-br from-purple-400 to-blue-600 min-h-screen flex flex-col items-center justify-center p-6">
+      <div className="w-full max-w-xl bg-white rounded-lg shadow-md p-8">
+        <h1 className="mb-6 text-3xl font-bold text-center text-gray-800">
+          RA2111008020027 - Bajaj Fiserv Health Task
+        </h1>
+        <textarea
+          value={inputValue}
+          onChange={handleInputChange}
+          rows="6"
+          placeholder='Enter JSON API input like {"data": ["A","B","C"]}'
+          className="w-full p-4 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <button
+          onClick={handleSubmit}
+          className="w-full mt-4 px-6 py-3 text-lg font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-300"
+        >
+          Submit
+        </button>
+        {error && <p className="mt-4 text-red-500 text-center">{error}</p>}
+        {responseData && (
+          <>
+            <div className="w-full mt-6">
+              <Select
+                options={options}
+                isMulti
+                onChange={(selected) => setSelectedOptions(selected)}
+                className="react-select-container"
+                classNamePrefix="react-select"
+              />
+            </div>
+            {renderResponse()}
+          </>
+        )}
+      </div>
+      <footer className="mt-8 text-white text-sm">
+        © 2024, Developed by Saksham Botke
+      </footer>
     </div>
   );
 };
